@@ -1,0 +1,119 @@
+m255
+K3
+13
+cModel Technology
+Z0 dD:\FPGA20232\CODE_BTL\ADC\simulation\qsim
+vdiv_clk
+Z1 !s100 DS950KC7JTP?md71Q;TJk0
+Z2 If4>9=d^>;3_IXcB7<j?nE0
+Z3 V8<353nVnGac[fjdLkK8`B2
+Z4 dD:\FPGA20232\CODE_BTL\ADC\simulation\qsim
+Z5 w1718021671
+Z6 8main.vo
+Z7 Fmain.vo
+L0 31
+Z8 OV;L;10.1d;51
+r1
+31
+Z9 !s90 -work|work|main.vo|
+Z10 o-work work -O0
+!i10b 1
+!s85 0
+Z11 !s108 1718021672.043000
+Z12 !s107 main.vo|
+!s101 -O0
+vdiv_clk_vlg_check_tst
+!i10b 1
+Z13 !s100 @^<diG<1MTZJZ0li;9hdF1
+Z14 IQc9Kb]4`;ihAOZf62aN9N2
+Z15 V7EYVBT@Oezijjjk;aOPnj0
+R4
+Z16 w1718021670
+Z17 8Waveform.vwf.vt
+Z18 FWaveform.vwf.vt
+L0 57
+R8
+r1
+!s85 0
+31
+Z19 !s108 1718021672.099000
+Z20 !s107 Waveform.vwf.vt|
+Z21 !s90 -work|work|Waveform.vwf.vt|
+!s101 -O0
+R10
+vdiv_clk_vlg_sample_tst
+!i10b 1
+Z22 !s100 YQ;3f7VBKMPzX_gZTZ>PE1
+Z23 IUanPDiD=abHUl?dAMRPkh3
+Z24 V;11BSR:K2V>K:jH5lZ[;42
+R4
+R16
+R17
+R18
+L0 29
+R8
+r1
+!s85 0
+31
+R19
+R20
+R21
+!s101 -O0
+R10
+vdiv_clk_vlg_vec_tst
+!i10b 1
+!s100 >F2F<Uc<Wb@oTj2VjIeWo1
+II_b0`7kE]3hn[A:83LQN80
+Z25 VYajgI15WKXK;;ISWg<;:b3
+R4
+R16
+R17
+R18
+Z26 L0 152
+R8
+r1
+!s85 0
+31
+R19
+R20
+R21
+!s101 -O0
+R10
+vmain
+Z27 !s100 PR>4H:hL3Ii<8?c`7W[;73
+Z28 ILzC6PN`i5_XEbh[hT3z1N2
+Z29 VB@KLEY6eWL`VX^EUk3MVY3
+R4
+Z30 w1718021485
+R6
+R7
+L0 31
+R8
+r1
+31
+R9
+R10
+Z31 !s108 1718021486.368000
+R12
+!i10b 1
+!s85 0
+!s101 -O0
+vmain_vlg_vec_tst
+Z32 !s100 d<TAdQ21=NzLHS3jUVgRO2
+Z33 I[BKgQElH32HbSiCaOWDac0
+Z34 VHZma`Q?n[z_A]1=F?<UDB3
+R4
+Z35 w1718021484
+R17
+R18
+L0 29
+R8
+r1
+31
+R21
+R10
+Z36 !s108 1718021486.457000
+Z37 !s107 Waveform.vwf.vt|
+!i10b 1
+!s85 0
+!s101 -O0

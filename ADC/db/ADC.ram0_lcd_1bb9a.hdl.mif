@@ -1,0 +1,20 @@
+-- begin_signature
+-- lcd
+-- end_signature
+WIDTH=8;
+DEPTH=16;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	8 :	00110000;
+	7 :	00110000;
+	6 :	00111010;
+	5 :	01000111;
+	4 :	01001110;
+	3 :	01000001;
+	2 :	01010011;
+	1 :	01001111;
+	0 :	01000100;
+END;

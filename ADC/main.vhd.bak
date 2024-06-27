@@ -1,0 +1,48 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity main is 
+    port ( 
+        BUFFER_ADC : in std_logic_vector(7 downto 0);    -- Sử dụng cho ADC
+        CLK_IN, EOC : in std_logic;                      -- Tín hiệu xung nhịp và End of Conversion
+        CLK_OUT, START, ALE, OE : out std_logic;         -- Tín hiệu điều khiển cho ADC
+        PWM_OUT : out std_logic;
+		  LED: out std_logic-- Tín hiệu điều khiển đèn
+    );
+end main ;
+
+architecture LogicFunction of main is
+    signal clk_temp : std_logic := '0';
+    signal start_pwm_temp : std_logic := '0';
+begin    
+    -- Khối chia tần số để tạo xung nhịp cho ADC0804
+    U0: entity work.div_clk
+        port map (
+            clk_in => CLK_IN, 
+            clk_out => clk_temp
+        ); 
+
+    -- Khối đọc giá trị từ ADC0804 và điều khiển xung PWM
+    U1: entity work.adc
+        port map (
+            clk => clk_temp, 
+            start => START, 
+            ale => ALE, 
+            oe => OE, 
+            data_adc_in => BUFFER_ADC, 
+            eoc => EOC, 
+				start_alarm => start_pwm_temp,
+				led => LED
+        );
+
+    -- Khối PWM sử dụng giá trị từ ADC để điều khiển xung PWM
+    U2: entity work.pwm
+        port map (
+            clk => CLK_IN, 
+            start_pwm => start_pwm_temp, 
+            pwm_out => PWM_OUT
+        );
+
+    -- Kết nối tín hiệu xung nhịp cho ADC0804
+    CLK_OUT <= clk_temp;
+end LogicFunction;

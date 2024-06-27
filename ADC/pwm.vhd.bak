@@ -1,0 +1,49 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity pwm is
+port (
+	clk: in std_logic;
+	start_pwm: in std_logic;
+	pwm_out: out std_logic
+);
+end pwm;
+
+architecture logic_function of pwm is
+	signal duty_cycle: integer range 0 to 10001 := 0;
+	constant jump_10: integer := 1000;
+	constant DUTY_MAX: integer := 10000;
+begin
+	process(clk)
+		variable cnt: integer range 0 to 10001;
+		variable repeat: integer range 0 to 501;
+	begin
+		if rising_edge(clk) then
+			if start_pwm = '1' then
+				cnt := cnt + 1;
+				if cnt < duty_cycle then
+					pwm_out <= '1';
+				elsif cnt >= duty_cycle and cnt < DUTY_MAX then
+					pwm_out <= '0';
+				elsif cnt >= DUTY_MAX then
+					repeat := repeat + 1;
+					if repeat >= 500 then
+						duty_cycle <= duty_cycle + jump_10;
+						repeat := 0;
+					end if;
+					
+					if duty_cycle >= DUTY_MAX then
+						duty_cycle <= 0;
+					end if;
+					cnt := 0;	
+				end if;
+			else 
+				repeat := 0;
+				cnt := 0;
+				pwm_out <= '0';
+				duty_cycle <= 0;
+			end if;
+		end if;
+	end process;
+end logic_function;

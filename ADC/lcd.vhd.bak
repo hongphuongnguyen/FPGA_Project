@@ -1,0 +1,121 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+entity LCD is
+    port (
+        data_out: OUT STD_LOGIC_VECTOR(7 downto 0) := "00000000";
+        RS: OUT STD_LOGIC; -- Chân RS của LCD (Register Select)
+        RW: OUT STD_LOGIC := '0'; -- Chân RW của LCD (đọc ghi dữ liệu)
+        EN: OUT STD_LOGIC := '1'; -- Chân kích hoạt LCD
+        clk: IN STD_LOGIC;
+        duty_cycle_out: in std_logic_vector(7 downto 0) -- giá trị duty_cycle từ khối PWM
+    );
+end LCD;
+
+architecture ACT of LCD is
+    type state is (delay, data_send);
+    signal st: state := delay;
+    type lcd_light is array (0 to 7) of std_logic_vector(7 downto 0);
+    signal HANG_CHUC, HANG_DON_VI: std_logic_vector(7 downto 0);
+
+    -- Hàm chuyển đổi giá trị từ std_logic_vector sang std_logic_vector của ký tự số
+    function to_lcd_digit(val: std_logic_vector(3 downto 0)) return std_logic_vector is
+        variable result: std_logic_vector(7 downto 0);
+    begin
+        case val is
+            when "0000" => result := x"30"; -- '0'
+            when "0001" => result := x"31"; -- '1'
+            when "0010" => result := x"32"; -- '2'
+            when "0011" => result := x"33"; -- '3'
+            when "0100" => result := x"34"; -- '4'
+            when "0101" => result := x"35"; -- '5'
+            when "0110" => result := x"36"; -- '6'
+            when "0111" => result := x"37"; -- '7'
+            when "1000" => result := x"38"; -- '8'
+            when "1001" => result := x"39"; -- '9'
+            when others => result := x"30"; -- '0' by default
+        end case;
+        return result;
+    end function;
+
+begin
+    process (clk)
+        variable count: integer RANGE 0 TO 5 := 0;
+        variable command: integer range 0 to 8 := 0;
+        variable lcd_light_data: lcd_light := (x"44", x"55", x"54", x"59", x"20", x"3A", x"30", x"30"); -- "DUTY : 00"
+        variable index: integer range 0 to 8 := 0;
+        variable duty_cycle_int: integer;
+        variable temp_duty: integer;
+    begin
+        if (rising_edge(clk)) then
+            -- Chuyển đổi giá trị duty_cycle_out thành ký tự số để hiển thị
+            duty_cycle_int := to_integer(unsigned(duty_cycle_out));
+            temp_duty := duty_cycle_int / 10;
+            HANG_CHUC <= to_lcd_digit(std_logic_vector(to_unsigned(temp_duty, 4)));
+            HANG_DON_VI <= to_lcd_digit(std_logic_vector(to_unsigned(duty_cycle_int mod 10, 4)));
+
+            lcd_light_data(6) := HANG_CHUC;
+            lcd_light_data(7) := HANG_DON_VI;
+
+            case st is
+                when delay =>
+                    count := count + 1;
+                    if (count = 1) then 
+                        EN <= '0'; -- High to low để ghi
+                    end if;
+                    if (count = 2) then -- Đưa xung về 1
+                        EN <= '1';
+                    end if;
+                    if (count = 4) then -- Chờ 2ms để thực hiện lệnh ghi vào màn hình
+                        st <= data_send;
+                    end if;
+                when data_send =>
+                    count := 0;
+                    case command is
+                        when 0 to 2 =>	-- Đợi lên nguồn
+                            RS <= '0';
+                            command := command + 1;
+                            st <= delay;
+                        when 3 =>
+                            data_out <= x"01";  -- 0x01 xóa màn hình
+                            RS <= '0';
+                            command := command + 1;
+                            st <= delay;
+                        when 4 =>
+                            data_out <= x"38";  -- 0x38 2 hàng, 5x7
+                            RS <= '0';
+                            command := command + 1;
+                            st <= delay;
+                        when 5 =>
+                            data_out <= x"0C";  -- 0x0C bật hiển thị, tắt con trỏ
+                            RS <= '0';
+                            command := command + 1;
+                            st <= delay;
+                        when 6 => 
+                            data_out <= x"80";  ---0x80: đưa con trỏ về đầu dòng 1
+                            RS <= '0';
+                            command := command + 1;
+                            st <= delay;
+                        when 7 =>
+                            if (index < 8 ) then
+                                data_out <= lcd_light_data(index);
+                                RS <= '1';
+                                index := index + 1;
+                                st <= delay;
+                            else
+                                index := 0;
+                                command := command + 1;
+                            end if;
+                        when 8 =>
+                            data_out <= x"02";  ---0x02: return home
+                            RS <= '0';
+                            command := 7;
+                            st <= delay;
+                        when others =>
+                            data_out <= x"00";
+                    end case;
+            end case;
+        end if;	
+    end process;
+end ACT;

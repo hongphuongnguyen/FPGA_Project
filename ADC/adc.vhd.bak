@@ -1,0 +1,52 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity adc is
+port(
+	clk : in std_logic;
+	start : out std_logic;
+	ale : out std_logic;
+	oe : out std_logic;
+	data_adc_in: in std_logic_vector(7 downto 0);
+	eoc: in std_logic;
+	start_alarm : out std_logic := '0';
+	led : out std_logic
+);
+end adc;
+
+architecture behav of adc is
+	signal flag : std_logic := '0';
+begin	
+	process(clk)
+		variable count: integer range 0 to 500001 := 0;
+	begin
+		if rising_edge(clk) then
+			count := count + 1;
+			if count = 1 then 
+				ale <= '1';
+				start <= '1';
+			end if;
+			if count = 3 then
+				ale <= '0';
+				start <= '0';
+				flag <= '1';
+			end if;
+			if (count > 3) and (eoc = '1') and (flag = '1') then
+				oe <= '1';
+				flag <= '0';
+			end if;
+			if count >= 400000 then
+				oe <= '0';
+				count := 0;
+			end if;
+			if unsigned(data_adc_in) > 30 then
+				start_alarm <= '1';
+				led <= '1';
+			else
+				start_alarm <= '0';
+				led <= '0';
+			end if;
+		end if;
+	end process;
+end behav;
